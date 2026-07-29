@@ -1,0 +1,20 @@
+# Configuration file with private keys & passwords
+config.py
+
+# Python Virtual Environment
+venv/
+.venv/
+env/
+
+# Python Cache
+__pycache__/
+*.pyc
+
+# Logs & Data
+logs/
+*.log
+
+# OS & IDE
+.DS_Store
+.vscode/
+.idea/

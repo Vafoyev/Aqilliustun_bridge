@@ -1,0 +1,15 @@
+SERVER_IP = "192.0.0.64"
+
+KV6114_IP = "192.0.0.65"
+KV6114_USERNAME = "admin"
+KV6114_PASSWORD = "CHANGE_ME"
+
+KH9510_IP = "192.0.0.66"
+
+CALL_STATUS_URL = f"http://{KV6114_IP}/ISAPI/VideoIntercom/callStatus?format=json"
+POLL_INTERVAL_SECONDS = 1
+
+AI_MICROSERVICE_URL = "http://localhost:5000/talk"
+
+GEMINI_API_KEY = "CHANGE_ME"
+
