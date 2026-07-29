@@ -5,13 +5,13 @@ import config
 auth = HTTPDigestAuth(config.KV6114_USERNAME, config.KV6114_PASSWORD)
 url = f"http://{config.KV6114_IP}/ISAPI/System/Network/SIP"
 
-xml_data = """<?xml version="1.0" encoding="UTF-8"?>
+xml_data = f"""<?xml version="1.0" encoding="UTF-8"?>
 <SIPServerList version="2.0" xmlns="http://www.isapi.org/ver20/XMLSchema">
 <SIPServer>
 <id>1</id>
 <Standard>
 <enabled>true</enabled>
-<proxy>192.0.0.64</proxy>
+<proxy>{config.SERVER_IP}</proxy>
 <proxyPort>5060</proxyPort>
 <userName>100</userName>
 <displayName>KV6114</displayName>
