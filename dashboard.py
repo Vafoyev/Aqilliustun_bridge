@@ -115,43 +115,46 @@ DASHBOARD_HTML_TEMPLATE = """
             --success: #10b981;
             --text: #f8fafc;
             --muted: #94a3b8;
+            --card-inner: #090d16;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
         body { background: var(--bg); color: var(--text); padding: 32px 24px; min-height: 100vh; }
-        .container { max-width: 1100px; margin: 0 auto; }
+        .container { max-width: 900px; margin: 0 auto; }
         header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
         h1 { font-size: 26px; font-weight: 700; background: linear-gradient(135deg, #818cf8, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .user-info { display: flex; align-items: center; gap: 12px; }
-        .grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 24px; margin-bottom: 32px; }
-        @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
-        .card { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: flex; flex-direction: column; justify-content: space-between; }
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-        .card-title { font-size: 16px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 8px; }
-        textarea { width: 100%; height: 260px; background: #090d16; border: 1px solid var(--border); border-radius: 10px; color: #e2e8f0; padding: 16px; font-size: 14px; line-height: 1.6; resize: vertical; outline: none; }
-        textarea:focus { border-color: var(--accent); }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-        input[type="password"], input[type="text"] { width: 100%; background: #090d16; border: 1px solid var(--border); border-radius: 10px; color: #e2e8f0; padding: 14px 16px; font-size: 14px; outline: none; }
-        input:focus { border-color: var(--accent); }
-        .btn { background: var(--accent); color: white; border: none; border-radius: 10px; padding: 12px 24px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
-        .btn:hover { background: var(--accent-hover); transform: translateY(-1px); }
+        .admin-badge { background: rgba(99, 102, 241, 0.15); color: #818cf8; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid rgba(99, 102, 241, 0.3); }
+        .status-badge { background: rgba(16, 185, 129, 0.15); color: var(--success); padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid rgba(16, 185, 129, 0.3); }
         .btn-logout { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); text-decoration: none; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; transition: all 0.2s; }
         .btn-logout:hover { background: #ef4444; color: white; }
-        .btn-edit { background: rgba(99, 102, 241, 0.2); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.4); padding: 6px 14px; font-size: 12px; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
-        .btn-edit:hover { background: var(--accent); color: white; }
-        .status-badge { background: rgba(16, 185, 129, 0.15); color: var(--success); padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid rgba(16, 185, 129, 0.3); }
-        .admin-badge { background: rgba(99, 102, 241, 0.15); color: #818cf8; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid rgba(99, 102, 241, 0.3); }
-        .toast { position: fixed; bottom: 24px; right: 24px; background: var(--success); color: white; padding: 14px 28px; border-radius: 10px; font-weight: 600; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.4); z-index: 999; }
+
+        .card-stack { display: flex; flex-direction: column; gap: 24px; }
+        .card { background: var(--panel); border: 1px solid var(--border); border-radius: 20px; padding: 28px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .card-title { font-size: 18px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 10px; }
         
-        /* Ustun shaklidagi saqlangan promptlar uslubi */
-        .history-section { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-        .prompt-columns { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; margin-top: 16px; }
-        .prompt-column-card { background: #090d16; border: 1px solid var(--border); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.2s; }
-        .prompt-column-card:hover { border-color: var(--accent); }
-        .prompt-column-card.active { border-color: var(--success); background: rgba(16, 185, 129, 0.04); }
-        .prompt-time { font-size: 11px; color: var(--muted); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-        .prompt-preview { font-size: 13px; color: #cbd5e1; line-height: 1.5; max-height: 90px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; margin-bottom: 12px; white-space: pre-wrap; }
-        .active-tag { background: rgba(16, 185, 129, 0.2); color: var(--success); font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 700; }
+        .btn-edit-toggle { background: rgba(99, 102, 241, 0.15); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.3); padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-edit-toggle:hover { background: var(--accent); color: white; transform: translateY(-1px); }
+        
+        .btn-save { background: var(--accent); color: white; border: none; border-radius: 10px; padding: 10px 20px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-save:hover { background: var(--accent-hover); }
+        .btn-cancel { background: rgba(148, 163, 184, 0.15); color: var(--muted); border: 1px solid var(--border); border-radius: 10px; padding: 10px 18px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .btn-cancel:hover { background: rgba(148, 163, 184, 0.3); color: white; }
+
+        /* Document Display View Styling */
+        .prompt-display-container { font-size: 14px; line-height: 1.7; color: #e2e8f0; padding: 12px 0; }
+        .prompt-section-header { font-size: 14px; font-weight: 700; color: #818cf8; background: rgba(99, 102, 241, 0.12); border-left: 3px solid #6366f1; padding: 6px 12px; margin-top: 16px; margin-bottom: 8px; border-radius: 0 8px 8px 0; display: inline-block; letter-spacing: 0.5px; }
+        .prompt-section-subheader { font-size: 13px; font-weight: 600; color: #c084fc; margin-top: 12px; margin-bottom: 6px; }
+        .prompt-text-block { color: #cbd5e1; margin-bottom: 12px; white-space: pre-wrap; word-break: break-word; }
+
+        .key-view-box { background: var(--card-inner); border: 1px solid var(--border); border-radius: 14px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; font-family: monospace; font-size: 15px; color: #38bdf8; }
+
+        textarea { width: 100%; height: 320px; background: var(--card-inner); border: 1.5px solid var(--accent); border-radius: 14px; color: #f8fafc; padding: 18px; font-size: 14px; line-height: 1.6; resize: vertical; outline: none; margin-bottom: 16px; box-shadow: 0 0 20px rgba(99, 102, 241, 0.15); }
+        input[type="password"], input[type="text"] { width: 100%; background: var(--card-inner); border: 1.5px solid var(--accent); border-radius: 12px; color: #f8fafc; padding: 14px 16px; font-size: 14px; outline: none; margin-bottom: 16px; box-shadow: 0 0 15px rgba(99, 102, 241, 0.15); }
+        
+        .toast { position: fixed; bottom: 24px; right: 24px; background: var(--success); color: white; padding: 14px 28px; border-radius: 12px; font-weight: 600; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.4); z-index: 999; }
+        .edit-actions { display: flex; justify-content: flex-end; gap: 12px; }
+        .saved-badge { font-size: 11px; background: rgba(16, 185, 129, 0.15); color: var(--success); padding: 4px 10px; border-radius: 12px; font-weight: 600; border: 1px solid rgba(16, 185, 129, 0.3); margin-bottom: 12px; display: inline-block; }
     </style>
 </head>
 <body>
@@ -168,68 +171,51 @@ DASHBOARD_HTML_TEMPLATE = """
             </div>
         </header>
 
-        <div class="grid">
+        <div class="card-stack">
             <!-- System Prompt Card -->
             <div class="card">
-                <div>
-                    <div class="card-header">
-                        <div class="card-title">🤖 AI System Prompt Tahrirlash</div>
-                    </div>
-                    <form id="promptForm">
-                        <textarea id="promptText" name="prompt" placeholder="AI System Prompt matnini bering...">{{ prompt }}</textarea>
-                        <div style="margin-top: 20px; text-align: right;">
-                            <button type="submit" class="btn">💾 Promptni Saqlash</button>
-                        </div>
-                    </form>
+                <div class="card-header">
+                    <div class="card-title">🤖 AI System Prompt Card</div>
+                    <button class="btn-edit-toggle" id="promptToggleBtn" onclick="togglePromptEdit()">✏️ Tahrirlash</button>
                 </div>
+                
+                <!-- Display Card View (Read-Only Document Style) -->
+                <div id="promptView">
+                    <div class="saved-badge">✓ Faol & Saqlangan Tizim Yo'riqnomasi</div>
+                    <div id="promptFormattedContent" class="prompt-display-container"></div>
+                </div>
+
+                <!-- Form Edit View (Hidden by default, opens only when Tahrirlash is clicked) -->
+                <form id="promptEditForm" style="display: none;">
+                    <textarea id="promptText" name="prompt" placeholder="AI System Prompt matnini bering...">{{ prompt }}</textarea>
+                    <div class="edit-actions">
+                        <button type="button" class="btn-cancel" onclick="togglePromptEdit()">❌ Bekor qilish</button>
+                        <button type="submit" class="btn-save">💾 Saqlash</button>
+                    </div>
+                </form>
             </div>
 
             <!-- Gemini API Key Card -->
             <div class="card">
-                <div>
-                    <div class="card-header">
-                        <div class="card-title">🔑 Google Gemini API Key (config.py)</div>
-                    </div>
-                    <form id="configForm">
-                        <div class="form-group">
-                            <label>Gemini API Key</label>
-                            <input type="password" id="geminiKey" name="gemini_key" value="{{ gemini_key }}" placeholder="AIzaSy...">
-                        </div>
-                        <p style="color: var(--muted); font-size: 12px; line-height: 1.5; margin-bottom: 20px;">
-                            Ushbu API Key Google Gemini Live API bilan muloqot o'rnatish uchun ishlatiladi. Kalit yangilangach <strong>"API Key Saqlash"</strong> tugmasini bosing.
-                        </p>
-                        <div style="text-align: right;">
-                            <button type="submit" class="btn">🔑 API Key Saqlash</button>
-                        </div>
-                    </form>
+                <div class="card-header">
+                    <div class="card-title">🔑 Google Gemini API Key Card</div>
+                    <button class="btn-edit-toggle" id="configToggleBtn" onclick="toggleConfigEdit()">✏️ Tahrirlash</button>
                 </div>
-            </div>
-        </div>
+                
+                <!-- Display Key View -->
+                <div id="configView" class="key-view-box">
+                    <span id="keyDisplay">{% if gemini_key %}{{ gemini_key[:6] }}••••••••••••{{ gemini_key[-4:] }}{% else %}Sozlanmagan{% endif %}</span>
+                    <span style="color: var(--success); font-size: 12px; font-weight: 600; font-family: 'Inter', sans-serif;">● Faol Kalit</span>
+                </div>
 
-        <!-- Saqlangan Promptlar (Ustun shaklida) -->
-        <div class="history-section">
-            <div class="card-header" style="margin-bottom: 4px;">
-                <div class="card-title">📋 Saqlangan Promptlar Ro'yxati (Ustunlar)</div>
-            </div>
-            <p style="color: var(--muted); font-size: 12px;">Saqlangan prompt ustunidagi "✏️ Tahrirlash" tugmasini bossangiz, u yuqoridagi redaktorga yuklanadi.</p>
-
-            <div class="prompt-columns" id="promptColumns">
-                {% for item in history %}
-                    <div class="prompt-column-card {% if loop.first %}active{% endif %}">
-                        <div>
-                            <div class="prompt-time">
-                                <span>🕒 {{ item.time }}</span>
-                                {% if loop.first %}<span class="active-tag">Joriy Prompt</span>{% endif %}
-                            </div>
-                            <div class="prompt-preview">{{ item.text }}</div>
-                        </div>
-                        <div style="text-align: right; margin-top: 8px;">
-                            <button class="btn-edit" data-prompt="{{ item.text }}">✏️ Tahrirlash</button>
-                        </div>
+                <!-- Form Edit View (Hidden by default) -->
+                <form id="configEditForm" style="display: none;">
+                    <input type="password" id="geminiKey" name="gemini_key" value="{{ gemini_key }}" placeholder="AIzaSy...">
+                    <div class="edit-actions">
+                        <button type="button" class="btn-cancel" onclick="toggleConfigEdit()">❌ Bekor qilish</button>
+                        <button type="submit" class="btn-save">💾 Saqlash</button>
                     </div>
-                {% else %}
-                    <p style="color: var(--muted); font-size: 13px; grid-column: 1/-1; padding: 12px 0;">Hali saqlangan promptlar mavjud emas.</p>
-                {% endfor %}
+                </form>
             </div>
         </div>
     </div>
@@ -237,6 +223,29 @@ DASHBOARD_HTML_TEMPLATE = """
     <div id="toast" class="toast">Saqlandi!</div>
 
     <script>
+        const rawPromptData = {{ prompt|tojson }};
+
+        function renderPrompt(raw) {
+            if (!raw) return '<em style="color: var(--muted);">Prompt kiritilmagan</em>';
+            let lines = raw.split('\\n');
+            let resultHtml = '';
+            lines.forEach(line => {
+                let trimmed = line.trim();
+                if (trimmed.startsWith('# ')) {
+                    resultHtml += `<div class="prompt-section-header">✦ ${trimmed.substring(2)}</div><br>`;
+                } else if (trimmed.startsWith('## ')) {
+                    resultHtml += `<div class="prompt-section-subheader">▪ ${trimmed.substring(3)}</div><br>`;
+                } else if (trimmed) {
+                    resultHtml += `<div class="prompt-text-block">${trimmed}</div>`;
+                } else {
+                    resultHtml += '<br>';
+                }
+            });
+            return resultHtml;
+        }
+
+        document.getElementById('promptFormattedContent').innerHTML = renderPrompt(rawPromptData);
+
         function showToast(msg) {
             const toast = document.getElementById('toast');
             toast.innerText = msg;
@@ -244,18 +253,39 @@ DASHBOARD_HTML_TEMPLATE = """
             setTimeout(() => { toast.style.display = 'none'; }, 3000);
         }
 
-        document.querySelectorAll('.btn-edit').forEach(button => {
-            button.addEventListener('click', function() {
-                const text = this.getAttribute('data-prompt');
-                const textarea = document.getElementById('promptText');
-                textarea.value = text;
-                textarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                textarea.focus();
-                showToast('📋 Prompt tahrirlash oynasiga yuklandi!');
-            });
-        });
+        function togglePromptEdit() {
+            const view = document.getElementById('promptView');
+            const form = document.getElementById('promptEditForm');
+            const btn = document.getElementById('promptToggleBtn');
+            if (form.style.display === 'none') {
+                form.style.display = 'block';
+                view.style.display = 'none';
+                btn.innerText = '❌ Yopish';
+                document.getElementById('promptText').focus();
+            } else {
+                form.style.display = 'none';
+                view.style.display = 'block';
+                btn.innerText = '✏️ Tahrirlash';
+            }
+        }
 
-        document.getElementById('promptForm').addEventListener('submit', async (e) => {
+        function toggleConfigEdit() {
+            const view = document.getElementById('configView');
+            const form = document.getElementById('configEditForm');
+            const btn = document.getElementById('configToggleBtn');
+            if (form.style.display === 'none') {
+                form.style.display = 'block';
+                view.style.display = 'none';
+                btn.innerText = '❌ Yopish';
+                document.getElementById('geminiKey').focus();
+            } else {
+                form.style.display = 'none';
+                view.style.display = 'block';
+                btn.innerText = '✏️ Tahrirlash';
+            }
+        }
+
+        document.getElementById('promptEditForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const text = document.getElementById('promptText').value;
             const res = await fetch('/api/prompt', {
@@ -264,12 +294,13 @@ DASHBOARD_HTML_TEMPLATE = """
                 body: JSON.stringify({prompt: text})
             });
             if (res.ok) {
-                showToast('✅ System Prompt muvaffaqiyatli saqlandi!');
-                setTimeout(() => { location.reload(); }, 800);
+                document.getElementById('promptFormattedContent').innerHTML = renderPrompt(text);
+                togglePromptEdit();
+                showToast('✅ System Prompt Card muvaffaqiyatli saqlandi!');
             }
         });
 
-        document.getElementById('configForm').addEventListener('submit', async (e) => {
+        document.getElementById('configEditForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const key = document.getElementById('geminiKey').value;
             const res = await fetch('/api/config', {
@@ -277,7 +308,12 @@ DASHBOARD_HTML_TEMPLATE = """
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({gemini_key: key})
             });
-            if (res.ok) showToast('✅ Gemini API Key muvaffaqiyatli saqlandi!');
+            if (res.ok) {
+                const masked = key.length > 10 ? key.substring(0,6) + '••••••••••••' + key.substring(key.length - 4) : '••••••••••••';
+                document.getElementById('keyDisplay').innerText = masked;
+                toggleConfigEdit();
+                showToast('✅ Gemini API Key Card muvaffaqiyatli saqlandi!');
+            }
         });
     </script>
 </body>

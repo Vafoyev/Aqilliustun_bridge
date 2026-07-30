@@ -28,6 +28,7 @@ DevOps / Server Administratori quyidagi portlarni ochiq bo'lishini ta'minlashi s
 ### Kiruvchi Portlar (Inbound / Server Firewall)
 * **`5060 / UDP`**: SIP Signalling (Domofon chaqiruvlari uchun).
 * **`10000 / UDP`**: RTP Audio Stream (Ovoz paketlarini uzatish uchun).
+* **`8000 / TCP`**: Web Admin Dashboard (AI Prompt va Gemini API Key boshqaruvi uchun).
 * **`22 / TCP`**: SSH Masofaviy ulanish.
 
 ### Chiquvchi Portlar (Outbound / External Network)
@@ -38,6 +39,7 @@ DevOps / Server Administratori quyidagi portlarni ochiq bo'lishini ta'minlashi s
 ```bash
 sudo ufw allow 5060/udp
 sudo ufw allow 10000/udp
+sudo ufw allow 8000/tcp
 sudo ufw reload
 ```
 
@@ -72,9 +74,16 @@ GEMINI_API_KEY = "YOUR_GEMINI_API_KEY"
 
 ### 3-Qadam: Systemd Service orqali 24/7 fonda ishga tushirish
 ```bash
+# 1. SIP/RTP Ovozli Bridge Server servisi:
 sudo cp aqilustun-bridge.service /etc/systemd/system/
+
+# 2. Web Admin Dashboard servisi (Port 8000):
+sudo cp aqilustun-dashboard.service /etc/systemd/system/
+
+# Servislarni faollashtirish va ishga tushirish:
 sudo systemctl daemon-reload
 sudo systemctl enable --now aqilustun-bridge
+sudo systemctl enable --now aqilustun-dashboard
 ```
 
 ---
