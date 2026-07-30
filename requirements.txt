@@ -1,10 +1,12 @@
-# AqilUstun Bridge — Production Dependencies
-
 # HTTP Client for Hikvision ISAPI API Digest Auth
 requests>=2.28.0
 
 # Async WebSocket client for Google Gemini Live API (wss://)
 websockets>=11.0.0
 
+# Web Dashboard Server
+flask>=3.0.0
+
 # Audio C-extension compatibility for Python 3.13+ (audioop fallback)
 audioop-lts; python_version >= "3.13"
+

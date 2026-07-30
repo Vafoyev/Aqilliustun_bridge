@@ -6,15 +6,11 @@ import websockets
 
 import config
 
-WS_URI = (
-    "wss://generativelanguage.googleapis.com/ws/"
-    "google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent"
-    f"?key={config.GEMINI_API_KEY}"
-)
+import os
 
 MODEL = "models/gemini-3.1-flash-live-preview"
 
-SYSTEM_INSTRUCTION = (
+DEFAULT_SYSTEM_INSTRUCTION = (
     "Sen \"Aqilli Ustun\" — domofonga o'rnatilgan sun'iy intellekt "
     "yordamchisisan. Isming ikki so'z: \"Aqilli\" va \"Ustun\". Uni doim "
     "to'liq, \"Aqilli Ustun\" deb ayt; \"Aqil Ustun\" deb qisqartirma. "
@@ -38,16 +34,31 @@ SYSTEM_INSTRUCTION = (
 )
 
 
-class GeminiLiveSession:
-    """Bitta qo'ng'iroq davomida ochiq turadigan Gemini Live WebSocket sessiyasi.
+def get_system_instruction():
+    """prompt.txt dan tizim yo'riqnomasini dinamik o'qiydi."""
+    prompt_path = os.path.join(os.path.dirname(__file__), "prompt.txt")
+    if os.path.exists(prompt_path):
+        try:
+            with open(prompt_path, "r", encoding="utf-8") as f:
+                text = f.read().strip()
+                if text:
+                    return text
+        except Exception as e:
+            print(f"[Gemini] prompt.txt o'qishda xato: {e}")
+    return DEFAULT_SYSTEM_INSTRUCTION
 
-    Callback'lar asyncio coroutine bo'lishi kerak:
-      on_audio_chunk(pcm24k_bytes)     - Gemini'dan kelgan javob audiosi (PCM 24kHz)
-      on_input_transcript(text_qism)   - fuqaro nutqining transkripsiya bo'lagi
-      on_output_transcript(text_qism)  - AI nutqining transkripsiya bo'lagi
-      on_turn_complete()               - AI javobi tugadi (keyingi navbat kutilyapti)
-      on_interrupted()                 - fuqaro AI gapirayotganda gapni bo'ldi
-    """
+
+def get_ws_uri():
+    """config.py dan Gemini API Key ni dinamik oladi."""
+    return (
+        "wss://generativelanguage.googleapis.com/ws/"
+        "google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent"
+        f"?key={config.GEMINI_API_KEY}"
+    )
+
+
+class GeminiLiveSession:
+    """Bitta qo'ng'iroq davomida ochiq turadigan Gemini Live WebSocket sessiyasi."""
 
     def __init__(
         self,
@@ -67,13 +78,16 @@ class GeminiLiveSession:
 
     async def connect(self):
         print("[Gemini] WebSocket'ga ulanilmoqda...")
-        self._ws = await websockets.connect(WS_URI, max_size=None)
+        ws_uri = get_ws_uri()
+        system_instruction = get_system_instruction()
+
+        self._ws = await websockets.connect(ws_uri, max_size=None)
 
         setup_msg = {
             "setup": {
                 "model": MODEL,
                 "generationConfig": {"responseModalities": ["AUDIO"]},
-                "systemInstruction": {"parts": [{"text": SYSTEM_INSTRUCTION}]},
+                "systemInstruction": {"parts": [{"text": system_instruction}]},
                 "inputAudioTranscription": {},
                 "outputAudioTranscription": {},
             }
