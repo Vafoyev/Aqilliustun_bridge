@@ -5,8 +5,8 @@ After=network.target
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/opt/aqilustun/bridge
-ExecStart=/opt/aqilustun/venv/bin/python3 ai_call_server.py
+WorkingDirectory=/opt/pythonProject/Aqilliustun_bridge-main/Aqilliustun_bridge-main
+ExecStart=/usr/bin/python3 ai_call_server.py
 Restart=always
 RestartSec=5
 Environment=PYTHONUNBUFFERED=1
