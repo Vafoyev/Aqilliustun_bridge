@@ -4,19 +4,48 @@ Ushbu server orqali:
 1. System Prompt (prompt.txt) ni brauzerda real-time tahrirlash va saqlash;
 2. Gemini API Key va IP sozlamalarini (config.py) yangilash;
 3. Qo'ng'iroqlar tarixi va transkriptlarini (logs/) ko'rish imkoniyati bor.
+
+Kirish xavfsizligi:
+Login: admin
+Parol: A1tech2026!@
 """
 
 import json
 import os
 import re
-from flask import Flask, render_template_string, request, jsonify
+from functools import wraps
+from flask import Flask, render_template_string, request, jsonify, Response
 
 app = Flask(__name__)
+
+# Admin Login va Paroli
+ADMIN_USERNAME = "admin"
+ADMIN_PASSWORD = "A1tech2026!@"
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROMPT_FILE = os.path.join(BASE_DIR, "prompt.txt")
 CONFIG_FILE = os.path.join(BASE_DIR, "config.py")
 LOGS_DIR = os.path.join(BASE_DIR, "logs")
+
+
+def check_auth(username, password):
+    return username == ADMIN_USERNAME and password == ADMIN_PASSWORD
+
+
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth = request.authorization
+        if not auth or not check_auth(auth.username, auth.password):
+            return Response(
+                "Kirish rad etildi. Login yoki parol xato!",
+                401,
+                {"WWW-Authenticate": 'Basic realm="AqilUstun Bridge Admin Dashboard"'},
+            )
+        return f(*args, **kwargs)
+
+    return decorated
+
 
 HTML_TEMPLATE = """
 <!DOCTYPE html>
@@ -42,6 +71,7 @@ HTML_TEMPLATE = """
         .container { max-width: 1200px; margin: 0 auto; }
         header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
         h1 { font-size: 24px; font-weight: 700; background: linear-gradient(135deg, #818cf8, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .user-info { display: flex; align-items: center; gap: 12px; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
         @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
         .card { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
@@ -56,10 +86,8 @@ HTML_TEMPLATE = """
         .btn { background: var(--accent); color: white; border: none; border-radius: 8px; padding: 10px 20px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
         .btn:hover { background: var(--accent-hover); transform: translateY(-1px); }
         .status-badge { background: rgba(16, 185, 129, 0.15); color: var(--success); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .admin-badge { background: rgba(99, 102, 241, 0.15); color: #818cf8; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid rgba(99, 102, 241, 0.3); }
         .toast { position: fixed; bottom: 20px; right: 20px; background: var(--success); color: white; padding: 12px 24px; border-radius: 8px; font-weight: 600; display: none; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-        .logs-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
-        .logs-table th, .logs-table td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); font-size: 13px; }
-        .logs-table th { color: var(--muted); font-weight: 600; }
         .log-item { background: #090d16; border-radius: 8px; padding: 12px; margin-bottom: 10px; border: 1px solid var(--border); }
         .role-user { color: #38bdf8; font-weight: 600; }
         .role-ai { color: #a78bfa; font-weight: 600; }
@@ -69,10 +97,13 @@ HTML_TEMPLATE = """
     <div class="container">
         <header>
             <div>
-                <h1>AqilUstun Bridge — Admin Panel</h1>
+                <h1>AqilUstun Bridge — Admin Dashboard</h1>
                 <p style="color: var(--muted); font-size: 13px; margin-top: 4px;">System Prompt, API Keys & Call Logs Management</p>
             </div>
-            <div class="status-badge">● Bridge Online</div>
+            <div class="user-info">
+                <div class="admin-badge">👤 Admin: admin</div>
+                <div class="status-badge">● Bridge Online</div>
+            </div>
         </header>
 
         <div class="grid">
@@ -187,18 +218,20 @@ HTML_TEMPLATE = """
 </html>
 """
 
+
 def read_prompt():
     if os.path.exists(PROMPT_FILE):
         with open(PROMPT_FILE, "r", encoding="utf-8") as f:
             return f.read()
     return ""
 
+
 def read_config():
     data = {
         "SERVER_IP": "195.158.8.44",
         "KV6114_IP": "192.0.0.65",
         "KV6114_PASSWORD": "",
-        "GEMINI_API_KEY": ""
+        "GEMINI_API_KEY": "",
     }
     if os.path.exists(CONFIG_FILE):
         with open(CONFIG_FILE, "r", encoding="utf-8") as f:
@@ -208,6 +241,7 @@ def read_config():
                 if m:
                     data[key] = m.group(1)
     return data
+
 
 def read_logs():
     logs = []
@@ -223,14 +257,20 @@ def read_logs():
                     pass
     return logs
 
+
 @app.route("/")
+@requires_auth
 def index():
     prompt = read_prompt()
     config_data = read_config()
     logs = read_logs()
-    return render_template_string(HTML_TEMPLATE, prompt=prompt, config_data=config_data, logs=logs)
+    return render_template_string(
+        HTML_TEMPLATE, prompt=prompt, config_data=config_data, logs=logs
+    )
+
 
 @app.route("/api/prompt", methods=["POST"])
+@requires_auth
 def save_prompt():
     data = request.get_json()
     new_prompt = data.get("prompt", "")
@@ -239,10 +279,12 @@ def save_prompt():
     print("[Dashboard] System Prompt yangilandi")
     return jsonify({"status": "ok"})
 
+
 @app.route("/api/config", methods=["POST"])
+@requires_auth
 def save_config():
     data = request.get_json()
-    new_content = f'''SERVER_IP = "{data.get('server_ip', '')}"
+    new_content = f"""SERVER_IP = "{data.get('server_ip', '')}"
 
 KV6114_IP = "{data.get('kv_ip', '')}"
 KV6114_USERNAME = "admin"
@@ -256,12 +298,15 @@ POLL_INTERVAL_SECONDS = 1
 AI_MICROSERVICE_URL = "http://localhost:5000/talk"
 
 GEMINI_API_KEY = "{data.get('gemini_key', '')}"
-'''
+"""
     with open(CONFIG_FILE, "w", encoding="utf-8") as f:
         f.write(new_content)
     print("[Dashboard] Config & GEMINI_API_KEY yangilandi")
     return jsonify({"status": "ok"})
 
+
 if __name__ == "__main__":
-    print("🚀 AqilUstun Bridge Admin Dashboard running on http://0.0.0.0:8000")
+    print(
+        "🚀 AqilUstun Bridge Admin Dashboard running on http://0.0.0.0:8000"
+    )
     app.run(host="0.0.0.0", port=8000, debug=False)
