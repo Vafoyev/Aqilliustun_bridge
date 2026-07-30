@@ -64,10 +64,10 @@ nano config.py
 ```
 `config.py` tarkibi:
 ```python
-SERVER_IP = "185.100.x.x"         # Serveringizning Tashqi (Public) IP adresi
-KV6114_IP = "192.168.1.65"        # Domofon IP adresi
+SERVER_IP = "195.158.8.44"        # Serveringizning Tashqi (Public) IP adresi
+KV6114_IP = "192.0.0.65"        # Domofon IP adresi
 KV6114_USERNAME = "admin"
-KV6114_PASSWORD = "YOUR_PASSWORD"
+KV6114_PASSWORD = "Q112233q"
 
 GEMINI_API_KEY = "YOUR_GEMINI_API_KEY"
 ```
