@@ -23,6 +23,7 @@
 
 ## 📂 Fayllar Tuzilishi
 
+- **`deploy.sh`**: Serverga to'liq 1-click avtomatik o'rnatish va boshqaruv (setup, update, status, logs) bash skripti.
 - **`ai_call_server.py`**: SIP server (port 5060) hamda RTP audio kanali (port 10000) ni boshqaruvchi va suhbat transkriptini saqlovchi asosiy server.
 - **`audio_codec.py`**: Domofon va Gemini o'rtasida audioni real-time kechikishsiz va chirsillashlarsiz o'giruvchi modul (`audioop`).
 - **`gemini_live.py`**: Google Gemini Live API bidi-stream WebSocket muloqot mijozi.
@@ -34,11 +35,24 @@
 
 ## 🚀 O'rnatish va Ishga Tushirish (Serverda)
 
+### ⚡ 1-Click Avtomatik O'rnatish (Tavsiya etiladi)
+
+```bash
+git clone https://github.com/Vafoyev/Aqilliustun_bridge.git
+cd Aqilliustun_bridge
+
+# Izoh: Avtomatik o'rnatish va sozlash
+chmod +x deploy.sh
+sudo ./deploy.sh setup
+```
+
+### 🛠 Qo'lda (Manual) O'rnatish
+
 ### 1. Loyihani yuklash va kutubxonalarni o'rnatish
 
 ```bash
-git clone <YOUR_GITHUB_REPO_URL> aqilustun-bridge
-cd aqilustun-bridge
+git clone https://github.com/Vafoyev/Aqilliustun_bridge.git
+cd Aqilliustun_bridge
 
 python3 -m venv venv
 source venv/bin/activate

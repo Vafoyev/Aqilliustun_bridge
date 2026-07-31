@@ -437,5 +437,6 @@ def save_config():
 
 
 if __name__ == "__main__":
-    print("[Dashboard] AqilUstun Bridge Admin Dashboard running on http://0.0.0.0:8000")
-    app.run(host="0.0.0.0", port=8000, debug=False)
+    port = getattr(config, "DASHBOARD_PORT", 8000)
+    print(f"[Dashboard] AqilUstun Bridge Admin Dashboard running on http://0.0.0.0:{port}")
+    app.run(host="0.0.0.0", port=port, debug=False)

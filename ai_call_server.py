@@ -27,8 +27,8 @@ from gemini_live import GeminiLiveSession
 
 BIND_IP = "0.0.0.0"
 SERVER_IP = config.SERVER_IP
-SIP_PORT = 5060
-RTP_PORT = 10000
+SIP_PORT = getattr(config, "SIP_PORT", 5060)
+RTP_PORT = getattr(config, "RTP_PORT", 10000)
 
 LOGS_DIR = "logs"
 
@@ -328,16 +328,27 @@ class AiCallServer:
     # --- SIP javoblari -------------------------------------------------------
 
     def _reply(self, msg, addr, status_line, extra="", body="", to_tag=None):
+        via = header(msg, "Via")
+        if "rport" in via and f"rport={addr[1]}" not in via:
+            via = re.sub(r";rport(?![=\d])", f";received={addr[0]};rport={addr[1]}", via)
+        elif "received=" not in via:
+            via += f";received={addr[0]}"
+
         to_hdr = header(msg, "To")
         if to_tag and ";tag=" not in to_hdr:
             to_hdr += f";tag={to_tag}"
+
+        date_str = time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime())
+
         response = (
             f"{status_line}\r\n"
-            f"Via: {header(msg, 'Via')}\r\n"
+            f"Via: {via}\r\n"
             f"From: {header(msg, 'From')}\r\n"
             f"To: {to_hdr}\r\n"
             f"Call-ID: {header(msg, 'Call-ID')}\r\n"
             f"CSeq: {header(msg, 'CSeq')}\r\n"
+            f"User-Agent: AqilUstun-Bridge/1.0\r\n"
+            f"Date: {date_str}\r\n"
             f"{extra}"
             f"Content-Length: {len(body)}\r\n\r\n"
             f"{body}"
@@ -354,7 +365,19 @@ class AiCallServer:
             extra=f"Contact: {contact}\r\nExpires: 3600\r\n",
             to_tag="reg123",
         )
-        log(f"Domofon ro'yxatdan o'tdi ({addr[0]})")
+        log(f"Domofon ro'yxatdan o'tdi ({addr[0]}:{addr[1]})")
+
+    async def _start_session_async(self):
+        if self.session or not self._pending_remote:
+            return
+        session = CallSession(self.rtp_transport, self._pending_remote)
+        self.session = session
+        try:
+            await session.start()
+        except Exception as e:
+            log(f"Suhbatni boshlashda xato: {type(e).__name__}: {e}")
+            self.session = None
+            await session.stop()
 
     def on_invite(self, msg, addr):
         m = re.search(r"m=audio\s+(\d+)\s+RTP/AVP", msg)
@@ -383,18 +406,11 @@ class AiCallServer:
             body=sdp,
             to_tag="aqilustun123",
         )
+        asyncio.create_task(self._start_session_async())
 
     async def on_ack(self, msg, addr):
-        if self.session or not self._pending_remote:
-            return
-        session = CallSession(self.rtp_transport, self._pending_remote)
-        self.session = session
-        try:
-            await session.start()
-        except Exception as e:
-            log(f"Suhbatni boshlashda xato: {type(e).__name__}: {e}")
-            self.session = None
-            await session.stop()
+        if not self.session:
+            await self._start_session_async()
 
     async def on_bye(self, msg, addr):
         self._reply(msg, addr, "SIP/2.0 200 OK")

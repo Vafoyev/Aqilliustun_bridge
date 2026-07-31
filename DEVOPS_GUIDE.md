@@ -47,6 +47,36 @@ sudo ufw reload
 
 ## 🚀 3. Serverga O'rnatish va Ishga Tushirish (Deployment Steps)
 
+### ⚡ Option A: Avtomatik Bash Skript Orqali (Tavsiya etiladi - 1 Click)
+
+Serveringizda loyihani yuklab olgach, `deploy.sh` skripti orqali venv, kutubxonalar, systemd servislar va UFW firewall sozlamalarini 1 ta buyruq bilan o'rnatishingiz mumkin:
+
+```bash
+git clone https://github.com/Vafoyev/Aqilliustun_bridge.git
+cd Aqilliustun_bridge
+
+# Izoh: Faylga ijro (executable) huquqini berish:
+chmod +x deploy.sh
+
+# To'liq serverga o'rnatish va servislarni sozlash:
+sudo ./deploy.sh setup
+
+# Keyinchalik `config.py` faylida kalitlarni sozlang:
+nano config.py
+```
+
+#### `deploy.sh` Boshqaruv Buyruqlari:
+* `sudo ./deploy.sh setup` — Barcha paketlar, venv, systemd servislari va firewallni sozlash.
+* `./deploy.sh update` — Loyihani git pull va venv yangilash hamda servislarni qayta yurgizish.
+* `./deploy.sh status` — Bridge va Dashboard servislarining holatini ko'rish.
+* `./deploy.sh logs bridge` — Bridge server jonli loglarini kuzatish.
+* `./deploy.sh logs dashboard` — Dashboard jonli loglarini kuzatish.
+* `./deploy.sh enable-sip` — Hikvision domofoniga SIP sozlamalarini yuborish.
+
+---
+
+### 🛠 Option B: Qo'lda (Manual) O'rnatish
+
 ### 1-Qadam: Loyihani yuklab olish va virtual muhit yaratish
 ```bash
 git clone https://github.com/Vafoyev/Aqilliustun_bridge.git

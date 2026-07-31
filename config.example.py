@@ -13,3 +13,8 @@ AI_MICROSERVICE_URL = "http://localhost:5000/talk"
 
 GEMINI_API_KEY = "CHANGE_ME"
 
+# Tarmoq Portlari (Mos ravishda o'zgartirishingiz mumkin)
+SIP_PORT = 5060         # SIP Signallash porti
+RTP_PORT = 10000        # RTP Audio stream porti
+DASHBOARD_PORT = 8000   # Web Admin Dashboard porti
+
